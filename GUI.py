@@ -59,6 +59,31 @@ def select_first_frame():
 
     return file_path
 
+def select_masks_folder():
+     # Initialize the Tkinter window
+    root = tk.Tk()
+    # Hide the main window
+    root.withdraw()
+
+    # Open the folder selection dialog and get the selected folder path
+    folder_selected = filedialog.askdirectory()
+
+    # Close the Tkinter window
+    root.destroy()
+
+    # Return the selected folder path
+    return folder_selected
+
+def select_video():
+    
+    root = tk.Tk()
+    root.withdraw()  # Hide the root window
+    file_path = filedialog.askopenfilename(
+        title="Select the video frame",
+        filetypes=[("Image files", "*.mp4")])  # Filter to show only video
+    root.destroy()
+
+    return file_path
 
 # Example usage
 if __name__ == "__main__":

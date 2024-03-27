@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 import time
+from inference.interact.interactive_utils import *
 
 def detect_objects_out_of_bounds(image_path, boundary):
 
@@ -49,11 +50,11 @@ def detect_objects_out_of_bounds(image_path, boundary):
         print("Some objects are out of the boundary.")
     else:
         cv2.rectangle(image, (left, top), (right, bottom), (0, 255, 0), 1)
-        print("All objects are within the boundary.")
+        #print("All objects are within the boundary.")
     
     cv2.imshow('Image with Boundary', image)
 
     ## set fps here
-    cv2.waitKey(0)  # Wait for a key press to proceed
+    cv2.waitKey(40)  # Wait for a key press to proceed
     #cv2.destroyAllWindows()
 
