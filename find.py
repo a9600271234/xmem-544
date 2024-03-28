@@ -3,7 +3,7 @@ import numpy as np
 import time
 from inference.interact.interactive_utils import *
 
-def detect_objects_out_of_bounds(image_path, boundary):
+def detect_objects_out_of_bounds(image_path, boundary, fps):
 
     # Load the image
     image = cv2.imread(image_path)
@@ -55,6 +55,6 @@ def detect_objects_out_of_bounds(image_path, boundary):
     cv2.imshow('Image with Boundary', image)
 
     ## set fps here
-    cv2.waitKey(40)  # Wait for a key press to proceed
+    cv2.waitKey(int(1000/fps))  # Wait for a key press to proceed
     #cv2.destroyAllWindows()
 

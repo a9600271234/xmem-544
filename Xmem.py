@@ -44,7 +44,8 @@ def images_to_video(image_folder, video_name, fps):
     cv2.destroyAllWindows()
     video.release()
 
-def segment(first_frame_path, video_path):
+def segment(first_frame_path, video_path, fps):
+
     network = XMem(config, 'saves\XMem.pth').eval().to(device)
     torch.cuda.empty_cache()
 
@@ -59,13 +60,16 @@ def segment(first_frame_path, video_path):
     processor = InferenceCore(network, config=config)
     processor.set_all_labels(range(1, num_objects + 1))  # consecutive labels
     cap = cv2.VideoCapture(video_name)
+
+    ## you could play with the second arg here, it may somehow be related to the fps?? not sure
     cap.set(cv2.CAP_PROP_FPS, 1)
     total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
     fps = int(cap.get(cv2.CAP_PROP_FPS))
 
     # You can change these two numbers
     frames_to_propagate = total_frames
-    visualize_every = 1
+    ## change this would skip frames
+    visualize_every = 3
 
     current_frame_index = 0
 
@@ -75,7 +79,7 @@ def segment(first_frame_path, video_path):
             _, frame = cap.read()
             if frame is None or current_frame_index > frames_to_propagate:
                 break
-
+            
             # convert numpy array to pytorch tensor format
             frame_torch, _ = image_to_torch(frame, device=device)
             if current_frame_index == 0:
@@ -83,8 +87,14 @@ def segment(first_frame_path, video_path):
                 mask_torch = index_numpy_to_one_hot_torch(mask, num_objects + 1).to(device)
                 # the background mask is not fed into the model
                 prediction = processor.step(frame_torch, mask_torch[1:])
+            
             else:
                 # propagate only
+                ## skip frames not needed 
+                if (current_frame_index % visualize_every) != 0:
+                    current_frame_index += 1
+                    #print("skip frame {}".format(current_frame_index))
+                    continue
                 prediction = processor.step(frame_torch)
 
             # argmax, convert to numpy
@@ -96,8 +106,8 @@ def segment(first_frame_path, video_path):
                 Image.fromarray(visualization).save('./saving_frame/{0:06d}.jpg'.format(current_frame_index))
             
             current_frame_index += 1
-            if(current_frame_index % 100 == 0):
-                print('Number of Images saved: {}'.format(current_frame_index))
+            # if(current_frame_index % 100 == 0):
+            #     print('Number of Images saved: {}'.format(current_frame_index))
 
     images_to_video('./saving_frame','new'+video_name,fps)
 

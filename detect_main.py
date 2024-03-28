@@ -13,15 +13,16 @@ from multiprocessing import Process
 
 class ImageHandler(FileSystemEventHandler):
 
-    def __init__(self, boundary):
+    def __init__(self, boundary, fps):
         super().__init__()
         self.boundary = boundary
+        self.fps = fps
 
     def process_image(self, image_path):
         # This method contains the logic to process an image.
         # You can modify this method to include the actual processing logic.
         #print(f"Processing image: {image_path}")
-        find.detect_objects_out_of_bounds(image_path, self.boundary)
+        find.detect_objects_out_of_bounds(image_path, self.boundary, fps = self.fps)
         
     def on_created(self, event):
         # This method is called when a new file is created.
@@ -33,10 +34,10 @@ class ImageHandler(FileSystemEventHandler):
         if not event.is_directory and event.src_path.endswith(('.png', '.jpg', '.jpeg')):
             self.process_image(event.src_path)
 
-def run_segment(first_frame_path, video_path):
-    Xmem.segment(first_frame_path, video_path)
+def run_segment(first_frame_path, video_path, fps):
+    Xmem.segment(first_frame_path, video_path, fps)
 
-def main():
+def main(fps):
 
     ## Select the frames by GUI
     print("Please select the first frame")
@@ -48,7 +49,7 @@ def main():
     
     ## Select the boundary by the first frame 
     boundary = GUI.select_points(first_frame_path)
-    handler = ImageHandler(boundary) 
+    handler = ImageHandler(boundary, fps) 
  
     ## go the the video's directory
     print("Please select the video")
@@ -56,10 +57,9 @@ def main():
 
     ## go the the directory where masks are stored
     directory_to_watch = os.path.join(os.path.dirname(video_path), "saving_frame")
-    print("~:", directory_to_watch)
 
     ## Using Multithread to run Xmem model in the background
-    p = Process(target=run_segment, args=(first_frame_path, video_path))
+    p = Process(target=run_segment, args=(first_frame_path, video_path, fps))
     p.start()
 
     ## First, process all existing images in the directory
