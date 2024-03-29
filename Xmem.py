@@ -59,11 +59,22 @@ def segment(first_frame_path, video_path, fps):
 
     processor = InferenceCore(network, config=config)
     processor.set_all_labels(range(1, num_objects + 1))  # consecutive labels
-    cap = cv2.VideoCapture(video_name)
+    cap = cv2.VideoCapture(1, cv2.CAP_DSHOW)
+    # cap = cv2.VideoCapture(video_name)
+
+
+    # # Desired width and the aspect ratio 9:11
+    # desired_width = 480
+    # aspect_ratio = 16 / 9
+
+    # # Calculate the desired height maintaining the 9:11 aspect ratio
+    # desired_height = int(desired_width * aspect_ratio)
+
 
     ## you could play with the second arg here, it may somehow be related to the fps?? not sure
-    cap.set(cv2.CAP_PROP_FPS, 1)
-    total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+    # cap.set(cv2.CAP_PROP_FPS, 1)
+    #total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+    total_frames = 2000
     fps = int(cap.get(cv2.CAP_PROP_FPS))
 
     # You can change these two numbers

@@ -9,9 +9,12 @@
 import detect_main
 import GUI
 import Xmem
+import os
+import delete
 
 fps = 20
 
 if __name__ == "__main__":
+    delete.main()
     detect_main.main(fps = fps)
 
